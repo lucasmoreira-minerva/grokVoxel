@@ -1,0 +1,39 @@
+# Working projects (generated media)
+out/
+.grok/
+
+# Secrets
+.env
+.env.*
+*.pem
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Large binary intermediates (keep examples as JSON only)
+*.mp4
+*.mov
+*.wav
+!assets/**/*.mp4
+
+# Music: keep metadata + README; ignore large audio unless you opt in
+music/*.mp3
+music/*.wav
+music/*.m4a
+!music/README.md
+!music/.gitkeep
+!music/manifest.json
+
+# Bake-off scratch
+bakeoff/_raw/
