@@ -84,10 +84,28 @@ def synthesize(text: str, voice_id: str, language: str, out_path: str, api_key: 
         f.write(data)
 
 
+def _load_api_key() -> str:
+    key = os.environ.get("XAI_API_KEY") or os.environ.get("XAI_TOKEN")
+    if key:
+        return key
+    # SuperGrok / Grok Build OIDC session (JWT) — works for TTS in many setups
+    auth_path = os.path.expanduser("~/.grok/auth.json")
+    if os.path.exists(auth_path):
+        try:
+            with open(auth_path) as f:
+                data = json.load(f)
+            for v in data.values():
+                if isinstance(v, dict) and v.get("key"):
+                    return v["key"]
+        except Exception:
+            pass
+    raise SystemExit(
+        "No TTS credential: set XAI_API_KEY, or sign in to Grok Build (~/.grok/auth.json)."
+    )
+
+
 def run(project_dir: str):
-    api_key = os.environ.get("XAI_API_KEY")
-    if not api_key:
-        raise SystemExit("XAI_API_KEY is not set (required for Grok TTS)")
+    api_key = _load_api_key()
 
     beats_path = os.path.join(project_dir, "beats.json")
     with open(beats_path) as f:

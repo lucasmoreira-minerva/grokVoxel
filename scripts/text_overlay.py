@@ -67,38 +67,57 @@ def accent_color(image_path, default=(214, 64, 42)):
     return best or default
 
 
-def render_caption(text, out_path, W=1920, H=1080, margin_v=None, accent=None):
-    """Cream cut-out caption letters + dark edge + soft shadow (no band)."""
-    size = int(min(W, H) * 0.045)
+def render_caption(
+    text,
+    out_path,
+    W=1920,
+    H=1080,
+    margin_v=None,
+    accent=None,
+    scale=0.72,
+    weight="regular",
+):
+    """Caption letters + thin dark edge + soft shadow (no band).
+
+    `scale` multiplies the base size (default 0.72 = smaller, less thick than v1).
+    `weight`: "regular" (default, thinner stroke) or "bold" (heavier cut-out look).
+    """
+    base = min(W, H) * 0.032  # was ~0.045 — smaller default
+    size = max(18, int(base * float(scale)))
     if margin_v is None:
-        margin_v = int(H * 0.06)
-    fnt = _font(FONT_BOLD, size)
+        margin_v = int(H * 0.05)
+    font_paths = FONT_BOLD if weight == "bold" else FONT_REG
+    # Prefer regular for thin captions; fall back to bold paths if needed
+    fnt = _font(font_paths if weight != "bold" else FONT_BOLD, size)
+    if weight != "bold":
+        fnt = _font(FONT_REG + FONT_BOLD, size)
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d0 = ImageDraw.Draw(img)
-    lines = _wrap(d0, text, fnt, int(W * 0.8))
-    lh = int(size * 1.3)
+    lines = _wrap(d0, text, fnt, int(W * 0.82))
+    lh = int(size * 1.28)
     y0 = H - margin_v - lh * len(lines)
     pos = [
         ((W - d0.textlength(ln, font=fnt)) / 2, y0 + i * lh, ln)
         for i, ln in enumerate(lines)
     ]
-    ow = max(3, round(size * 0.13))
+    # thinner outline than before (was ~0.13 of size)
+    ow = max(1, round(size * 0.07))
     sh = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     sd = ImageDraw.Draw(sh)
     for x, y, t in pos:
         sd.text(
-            (x + 3, y + 4),
+            (x + 2, y + 2),
             t,
             font=fnt,
-            fill=(8, 6, 3, 190),
+            fill=(8, 6, 3, 140),
             stroke_width=ow,
-            stroke_fill=(8, 6, 3, 190),
+            stroke_fill=(8, 6, 3, 140),
         )
-    img = Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(5)))
+    img = Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(3)))
     d = ImageDraw.Draw(img)
     if accent:
-        a = tuple(accent[:3]) + (255,)
-        kw = max(4, round(size * 0.14))
+        a = tuple(accent[:3]) + (200,)
+        kw = max(1, round(size * 0.05))
         for x, y, t in pos:
             d.text((x, y), t, font=fnt, fill=a, stroke_width=ow + kw, stroke_fill=a)
     for x, y, t in pos:
@@ -106,9 +125,9 @@ def render_caption(text, out_path, W=1920, H=1080, margin_v=None, accent=None):
             (x, y),
             t,
             font=fnt,
-            fill=(252, 246, 232, 255),
+            fill=(252, 248, 240, 245),
             stroke_width=ow,
-            stroke_fill=(32, 22, 18, 255),
+            stroke_fill=(28, 22, 18, 220),
         )
     img.save(out_path)
     return out_path
