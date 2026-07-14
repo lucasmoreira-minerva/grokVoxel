@@ -9,7 +9,15 @@ are Pillow PNGs composited with `overlay`.
 By default each clip is muted (-an). Set shot keep_native_sfx=true to pass native SFX
 (still ducked under VO, never used as music bed).
 
-Usage: python3 assemble.py <project_dir>
+Usage:
+  python3 assemble.py <project_dir>
+  python3 assemble.py <project_dir> --no-captions
+  python3 assemble.py <project_dir> --caption-scale 0.65 --output final-nocap.mp4
+
+beats.json options:
+  "captions": true|false          (default true; CLI --no-captions wins)
+  "caption_scale": 0.72           (relative size; smaller = thinner captions)
+  "output": "final.mp4"           (filename under project_dir)
 """
 import json
 import os
@@ -56,7 +64,7 @@ def shots_of(beat):
         yield beat
 
 
-def run(project_dir):
+def run(project_dir, captions=None, caption_scale=None, output_name=None):
     with open(os.path.join(project_dir, "beats.json")) as f:
         doc = json.load(f)
     beats = doc["beats"]
@@ -65,7 +73,13 @@ def run(project_dir):
     mix = doc.get("mix", {})
     music_vol = float(mix.get("music", 0.55))
     voice_vol = float(mix.get("voice", 1.25))
-    tmp = os.path.join(project_dir, "_seg")
+    if captions is None:
+        captions = bool(doc.get("captions", True))
+    if caption_scale is None:
+        caption_scale = float(doc.get("caption_scale", 0.72))
+    if output_name is None:
+        output_name = doc.get("output") or ("final.mp4" if captions else "final-no-captions.mp4")
+    tmp = os.path.join(project_dir, "_seg" if captions else "_seg_nocap")
     os.makedirs(tmp, exist_ok=True)
 
     segs = []
@@ -135,25 +149,7 @@ def run(project_dir):
     body = os.path.join(tmp, "body_silent.mp4")
     ff(["-f", "concat", "-safe", "0", "-i", listf, "-c", "copy", body])
 
-    # 3) captions + watermark
-    cap_pngs = []
-    for bs in beat_spans:
-        beat = bs["beat"]
-        p = os.path.join(tmp, f"cap_{beat['id']}.png")
-        kf = next(
-            (
-                s.get("keyframe_path")
-                for s in (beat.get("shots") or [beat])
-                if s.get("keyframe_path") and os.path.exists(s["keyframe_path"])
-            ),
-            None,
-        )
-        acc = text_overlay.accent_color(kf) if kf else None
-        text_overlay.render_caption(beat["narration"], p, W, H, accent=acc)
-        cap_pngs.append(p)
-    wm_png = text_overlay.render_watermark(wm_text, os.path.join(tmp, "wm.png"), W, H)
-
-    # 4) overlay + mix
+    # 3) optional captions + watermark
     if "bgm_path" not in doc or not os.path.exists(doc["bgm_path"]):
         raise SystemExit("beats.json missing bgm_path — run pick_music.py first")
     for bs in beat_spans:
@@ -161,24 +157,51 @@ def run(project_dir):
         if not na or not os.path.exists(na):
             raise SystemExit(f"beat {bs['beat'].get('id')} missing narration_audio")
 
+    cap_pngs = []
+    if captions:
+        for bs in beat_spans:
+            beat = bs["beat"]
+            p = os.path.join(tmp, f"cap_{beat['id']}.png")
+            kf = next(
+                (
+                    s.get("keyframe_path")
+                    for s in (beat.get("shots") or [beat])
+                    if s.get("keyframe_path") and os.path.exists(s["keyframe_path"])
+                ),
+                None,
+            )
+            acc = text_overlay.accent_color(kf) if kf else None
+            text_overlay.render_caption(
+                beat["narration"], p, W, H, accent=acc, scale=caption_scale
+            )
+            cap_pngs.append(p)
+    wm_png = text_overlay.render_watermark(wm_text, os.path.join(tmp, "wm.png"), W, H)
+
+    # 4) overlay + mix
     nb = len(beat_spans)
-    inputs = ["-i", body]
+    inputs = ["-i", body]  # 0
     for p in cap_pngs:
         inputs += ["-i", p]
     inputs += ["-i", wm_png]
-    narr_base = nb + 2
+    # indices: body=0, caps=1..nc, wm=nc+1, narrs follow, then bgm
+    nc = len(cap_pngs)
+    wm_idx = nc + 1
+    narr_base = wm_idx + 1
     for bs in beat_spans:
         inputs += ["-i", bs["beat"]["narration_audio"]]
     bgm_idx = narr_base + nb
     inputs += ["-i", doc["bgm_path"]]
 
     chain, prev = [], "[0:v]"
-    for i, bs in enumerate(beat_spans):
-        s, e = bs["start"] + 0.2, bs["start"] + bs["dur"] - 0.1
-        lbl = f"[v{i+1}]"
-        chain.append(f"{prev}[{i+1}:v]overlay=0:0:enable='between(t,{s:.2f},{e:.2f})'{lbl}")
-        prev = lbl
-    chain.append(f"{prev}[{nb+1}:v]overlay=0:0[v]")
+    if captions:
+        for i, bs in enumerate(beat_spans):
+            s, e = bs["start"] + 0.2, bs["start"] + bs["dur"] - 0.1
+            lbl = f"[v{i+1}]"
+            chain.append(
+                f"{prev}[{i+1}:v]overlay=0:0:enable='between(t,{s:.2f},{e:.2f})'{lbl}"
+            )
+            prev = lbl
+    chain.append(f"{prev}[{wm_idx}:v]overlay=0:0[v]")
 
     nlabels = []
     for i, bs in enumerate(beat_spans):
@@ -200,7 +223,7 @@ def run(project_dir):
     )
     filt = ";".join(chain)
 
-    final = os.path.join(project_dir, "final.mp4")
+    final = os.path.join(project_dir, output_name)
     ff(
         [
             *inputs,
@@ -220,11 +243,37 @@ def run(project_dir):
             final,
         ]
     )
-    print("FINAL:", final, f"(~{total}s, {len(segs)} shots)")
+    print(
+        "FINAL:",
+        final,
+        f"(~{total}s, {len(segs)} shots, captions={'on' if captions else 'off'}, scale={caption_scale})",
+    )
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python3 assemble.py <project_dir>", file=sys.stderr)
+        print(__doc__, file=sys.stderr)
         sys.exit(2)
-    run(os.path.abspath(sys.argv[1]))
+    project = os.path.abspath(sys.argv[1])
+    captions = None
+    caption_scale = None
+    output_name = None
+    args = sys.argv[2:]
+    i = 0
+    while i < len(args):
+        if args[i] in ("--no-captions", "--nocap"):
+            captions = False
+            i += 1
+        elif args[i] == "--captions":
+            captions = True
+            i += 1
+        elif args[i] == "--caption-scale" and i + 1 < len(args):
+            caption_scale = float(args[i + 1])
+            i += 2
+        elif args[i] in ("--output", "-o") and i + 1 < len(args):
+            output_name = args[i + 1]
+            i += 2
+        else:
+            print("Unknown arg:", args[i], file=sys.stderr)
+            sys.exit(2)
+    run(project, captions=captions, caption_scale=caption_scale, output_name=output_name)

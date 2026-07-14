@@ -12,9 +12,9 @@ description: >
 
 # GrokVoxel
 
-Turn a one-line topic into a finished **short explainer / promo mp4** (target 15–60s,
-aspect `16:9` or `9:16`). Narration language is a parameter (default **English**;
-**Brazilian Portuguese / pt-BR** must work).
+Turn a one-line topic into a finished **short explainer / promo mp4** (target **15–180s**,
+default 30–90s; **hard max 3 minutes**), aspect `16:9` or `9:16`. Narration language is a
+parameter (default **English**; **Brazilian Portuguese / pt-BR** must work).
 
 **Visual style** is editorial paper-collage / encyclopedia scrapbook / archival papercraft
 (see `references/prompt-guide-grokvoxel.md`) — *not* 3D voxel block art. The name is brand.
@@ -96,11 +96,27 @@ python3 scripts/pick_music.py out/<project>   # uses beats.json "music" mood or 
 
 ```bash
 python3 scripts/assemble.py out/<project>
+python3 scripts/assemble.py out/<project> --no-captions -o final-no-captions.mp4
 ```
 
-Output: `out/<project>/final.mp4` (concat, duck BGM under VO, burn captions + watermark).
+Defaults: thinner captions (`caption_scale` ≈ 0.72). Override in `beats.json`:
+`"captions": true`, `"caption_scale": 0.65`.
 
-### 7. Verify
+Output: `out/<project>/final.mp4` (and optional no-caption twin).
+
+### 7. Storyboard one-pager
+
+After keyframes exist (or with placeholders), export a single PNG/PDF of the full board:
+
+```bash
+python3 scripts/storyboard_page.py out/<project>
+python3 scripts/storyboard_page.py out/<project> --cols 4 --title "My Film"
+```
+
+Writes `storyboard.png` + `storyboard.pdf` under the project dir (thumbnails, titles,
+narration/scene text). Use for client approval before or after motion.
+
+### 8. Verify
 
 Extract frames and inspect; re-roll keyframes cheaply before re-animating.
 
@@ -126,7 +142,10 @@ ffmpeg -ss 2 -i out/<project>/final.mp4 -frames:v 1 /tmp/check.jpg
   "voice": { "voice_id": "eve", "language": "en", "speed": 1.0 },
   "music": "documentary warm instrumental",
   "mix": { "music": 0.55, "voice": 1.25 },
+  "captions": true,
+  "caption_scale": 0.72,
   "watermark": "Made with GrokVoxel",
+  "duration_target_s": 90,
   "beats": [
     {
       "id": 1,
@@ -166,6 +185,17 @@ Only these sources may be used for BGM:
 Never rip audio from arbitrary videos. Never use Grok Imagine clip audio as a music bed.
 List tracks in `music/manifest.json` with `"source": "pixabay" | "youtube_audio_library" | "incompetech"`.
 
+## Duration limits
+
+| Target | Beats (guide) | Notes |
+|---|---|---|
+| 15–30s | 3–8 | social hooks |
+| 60s | 10–12 | standard explainer |
+| 90s | 12–16 | preferred long pilot |
+| **180s max** | 20–28 | full storyboard ceiling |
+
+Do not plan a single `beats.json` over **3 minutes**. Split longer narratives into chapters.
+
 ## Human gates (do not skip)
 
 | Gate | When | What stops |
@@ -173,7 +203,8 @@ List tracks in `music/manifest.json` with `"source": "pixabay" | "youtube_audio_
 | **GATE 1** | After drafting `beats.json` | All generation |
 | **GATE 2** | Style bake-off | Full keyframe/motion run |
 
-Everything else is automated.
+Everything else is automated. Optional: export `storyboard_page.py` after GATE 1 keyframe
+draft for visual approval.
 
 ## References to read before prompting
 

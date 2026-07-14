@@ -48,13 +48,21 @@ Three tiers:
 | **15s** | 3–4 | ~4s | ~35–45 |
 | **30s** | 6–8 | ~4–5s | ~70–80 |
 | **60s** | 10–12 | ~5–6s | ~130–150 |
+| **90s** | 12–16 | ~5–7s | ~190–220 |
+| **120s** | 16–20 | ~5–7s | ~250–300 |
+| **180s (3 min max)** | 20–28 | ~5–7s | ~380–450 |
 
+- **Maximum supported storyboard length: 3 minutes (180s).** Longer films should be split
+  into chapters (separate `out/<project>-chN/` runs) or re-edited offline.
 - Prefer **2 shots per beat** (wide+title, detail no-title) so cuts land every ~4–6s.
 - Never hold a static poster > ~7–8s of wall-clock time.
+- For 90s–180s: keep a cold open / logo sting (≤8s), then body, then payoff; optional mid-film
+  “map / masterplan” tableaus.
 - Endings: `hard_cut` (default) · `quick_cta` · `loop_close`.
 
 **pt-BR note:** Brazilian Portuguese VO is often ~10–15% longer than English for the same
-idea — budget slightly fewer words per beat or slightly longer shot durs.
+idea — budget slightly fewer words per beat or slightly longer shot durs. For 90s pilots in
+pt-BR, aim ~12–14 beats with short lines (≤18 words) so total lands near 90s, not 2+ min.
 
 ---
 
@@ -97,5 +105,6 @@ HOOKS: mistake_callout pain_point surprising_stat direct_question urgent_warning
 SIZES: EST_WIDE WIDE MEDIUM CLOSE DETAIL
 MOVES: static push_in pull_out pan tilt parallax element
 ENDINGS: hard_cut quick_cta loop_close
-BEATS: 15s→3–4 · 30s→6–8 · 60s→10–12 · hook ≤3s · cut every 3–5s
+BEATS: 15s→3–4 · 30s→6–8 · 60s→10–12 · 90s→12–16 · 180s→20–28 (max)
+       hook ≤3s · cut every 3–5s · export storyboard via scripts/storyboard_page.py
 ```
