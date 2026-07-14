@@ -1,0 +1,128 @@
+{
+  "project": "before-money-30s",
+  "topic": "A brief history of money — before coins and cash",
+  "language": "en",
+  "aspect": "9:16",
+  "provider": "grok_native",
+  "collage_style": "swiss-editorial",
+  "arc": "timeline",
+  "style_refs": [
+    "references/stills/mrlarus-qin-portrait.jpg",
+    "references/stills/mrlarus-one-script.jpg"
+  ],
+  "voice": {
+    "voice_id": "eve",
+    "language": "en",
+    "speed": 1.0
+  },
+  "music": "documentary warm instrumental",
+  "mix": {
+    "music": 0.55,
+    "voice": 1.25
+  },
+  "watermark": "Made with GrokVoxel",
+  "beats": [
+    {
+      "id": 1,
+      "title_en": "BEFORE MONEY",
+      "bg": "warm clay tan",
+      "feel": "ancient, humble",
+      "hook": "surprising_stat",
+      "narration": "For most of history, there was no money — only what you could trade by hand.",
+      "shots": [
+        {
+          "id": "a",
+          "dur": 5,
+          "title": true,
+          "shot_size": "WIDE",
+          "camera_move": "push_in",
+          "scene": "two traders exchanging a goat cutout and grain sacks, clay tokens, shells, kraft tag BEFORE MONEY",
+          "element_motion": "goat bobs, tokens scatter, tape flutters",
+          "keep_native_sfx": false
+        },
+        {
+          "id": "b",
+          "dur": 4,
+          "title": false,
+          "shot_size": "CLOSE",
+          "camera_move": "parallax",
+          "scene": "close-up of hands exchanging shells and clay tokens on torn paper map scrap",
+          "element_motion": "shells slide together, halftone pulses"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title_en": "BARTER LIMITS",
+      "bg": "aged kraft",
+      "feel": "problem, friction",
+      "hook": "pain_point",
+      "narration": "Barter only works when both sides want exactly what the other has — a fragile coincidence.",
+      "shots": [
+        {
+          "id": "a",
+          "dur": 5,
+          "title": true,
+          "shot_size": "WIDE",
+          "camera_move": "pan",
+          "scene": "split collage: farmer with wheat, smith with tools, red X stickers on mismatched wants",
+          "element_motion": "red X stickers stamp down, arrows bounce between sides"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title_en": "SHELLS & METAL",
+      "bg": "deep teal paper",
+      "feel": "invention, clever",
+      "narration": "Shells, salt, and metal pieces became shared standards — value you could carry.",
+      "shots": [
+        {
+          "id": "a",
+          "dur": 5,
+          "title": true,
+          "shot_size": "MEDIUM",
+          "camera_move": "parallax",
+          "scene": "cowrie shells, salt blocks, copper rings as labeled paper cutouts on map board",
+          "element_motion": "shells rotate, salt blocks stack, ring spins"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title_en": "FIRST COINS",
+      "bg": "imperial deep-red",
+      "feel": "breakthrough",
+      "narration": "Stamped coins locked weight and trust into a single object — money as we know it began.",
+      "shots": [
+        {
+          "id": "a",
+          "dur": 5,
+          "title": true,
+          "shot_size": "CLOSE",
+          "camera_move": "static",
+          "scene": "ancient stamped coin hero cutout, wax seal, minting hammer, banner FIRST COINS",
+          "element_motion": "seal stamps down, coin settles with paper jitter"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title_en": "STILL EVOLVING",
+      "bg": "charcoal black",
+      "feel": "modern, open-ended",
+      "narration": "From clay tokens to cards and code — money keeps changing shape. The need to exchange never did.",
+      "shots": [
+        {
+          "id": "a",
+          "dur": 5,
+          "title": true,
+          "shot_size": "WIDE",
+          "camera_move": "pull_out",
+          "scene": "timeline strip: clay token → coin → paper bill → card → phone screen, all paper cutouts",
+          "element_motion": "timeline pieces snap in left to right"
+        }
+      ]
+    }
+  ]
+}
