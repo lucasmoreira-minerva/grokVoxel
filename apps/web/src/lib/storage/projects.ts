@@ -123,14 +123,19 @@ export function writeStoryboardArtifact(project: Project): string {
       language: project.brief.language,
     },
     music: project.brief.musicId,
-    captions: true,
-    caption_scale: 0.62,
-    watermark: "Grok Studio",
+    captions: project.brief.captions?.enabled ?? true,
+    caption_scale: project.brief.captions?.scale ?? 0.62,
+    caption_style: project.brief.captions?.style ?? "clean",
+    caption_position: project.brief.captions?.position ?? "bottom",
+    watermark: "GrokStage",
     beats: project.storyboard.scenes.map((s, i) => ({
       id: i + 1,
       title_en: s.title,
       title_pt: s.title,
       narration: s.narration,
+      image_url: s.imageUrl || null,
+      image_path: s.imagePath || null,
+      image_prompt: s.imagePrompt || s.visual,
       shots: [
         {
           id: "a",
