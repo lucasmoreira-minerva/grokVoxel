@@ -37,6 +37,18 @@ export interface StoryboardScene {
   notes?: string;
   /** Director confirmed this card */
   confirmed?: boolean;
+  /** Optional dedicated image-gen prompt (defaults to visual) */
+  imagePrompt?: string;
+  /** Queue flag for bulk still generation */
+  imageJob?: "idle" | "queued" | "done" | "error";
+}
+
+export interface CaptionConfig {
+  enabled: boolean;
+  /** Relative scale, default 0.62 */
+  scale: number;
+  style: "clean" | "bold" | "minimal";
+  position: "bottom" | "top";
 }
 
 export interface Storyboard {
@@ -65,6 +77,7 @@ export interface ProjectBrief {
   voiceId: string;
   narrationStyle: string;
   initialPrompt: string;
+  captions?: CaptionConfig;
 }
 
 export interface RenderJob {
@@ -106,8 +119,11 @@ export interface MusicTrack {
   title: string;
   moods: string[];
   source: "pixabay" | "youtube_audio_library" | "incompetech" | "local";
+  /** Relative path under repo root, e.g. music/carefree.mp3 */
   file?: string;
   credit?: string;
+  /** Optional remote preview URL if we only have a link */
+  previewUrl?: string;
 }
 
 export interface VoiceOption {
