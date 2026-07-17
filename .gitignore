@@ -1,5 +1,7 @@
-# Working projects (generated media)
+# Working / generated
 out/
+data/projects/**
+!data/projects/.gitkeep
 .grok/
 
 # Secrets
@@ -14,6 +16,14 @@ out/
 *.swp
 *~
 
+# Node
+node_modules/
+.next/
+apps/web/.next/
+apps/web/node_modules/
+dist/
+*.tsbuildinfo
+
 # Python
 __pycache__/
 *.py[cod]
@@ -21,20 +31,26 @@ __pycache__/
 venv/
 *.egg-info/
 
-# Large binary intermediates (keep examples as JSON only)
+# Large media
 *.mp4
 *.mov
 *.wav
 !assets/**/*.mp4
 
-# Music: keep metadata + README; ignore large audio unless you opt in
+# Music binaries
 music/*.mp3
 music/*.wav
 music/*.m4a
 !music/README.md
 !music/.gitkeep
 !music/manifest.json
+skills/**/music/*.mp3
 
-# Bake-off scratch
+# Bake-off / brand heavy
 bakeoff/_raw/
 references/brand/garca-valley-satellite-map.png
+skills/**/references/brand/garca-valley-satellite-map.png
+
+# seed projects (json only)
+!data/projects/*/
+!data/projects/*/project.json
