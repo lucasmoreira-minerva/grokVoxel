@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Avatar,
-  Button,
-  Chip,
-  Separator,
-  Tooltip,
-} from "@heroui/react";
+import { Avatar, Button, Chip, Separator } from "@heroui/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const NAV = [
@@ -53,24 +47,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
             return (
-              <Tooltip key={item.href} delay={400}>
-                <Tooltip.Trigger>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition border ${
-                      active
-                        ? "bg-accent/15 text-accent border-accent/30 font-semibold shadow-sm"
-                        : "text-muted hover:bg-overlay hover:text-foreground border-transparent"
-                    }`}
-                  >
-                    <span className="w-5 text-center opacity-90 text-base leading-none">
-                      {item.icon}
-                    </span>
-                    <span className="flex-1">{item.label}</span>
-                  </Link>
-                </Tooltip.Trigger>
-                <Tooltip.Content>{item.hint}</Tooltip.Content>
-              </Tooltip>
+              <Link
+                key={item.href}
+                href={item.href}
+                title={item.hint}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition border ${
+                  active
+                    ? "bg-accent/15 text-accent border-accent/30 font-semibold shadow-sm"
+                    : "text-muted hover:bg-overlay hover:text-foreground border-transparent"
+                }`}
+              >
+                <span className="w-5 text-center opacity-90 text-base leading-none">
+                  {item.icon}
+                </span>
+                <span className="flex-1">{item.label}</span>
+              </Link>
             );
           })}
         </nav>
