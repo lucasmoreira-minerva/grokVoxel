@@ -1,0 +1,206 @@
+{
+  "id": "garcavalley",
+  "name": "Garça Valley — referência",
+  "createdAt": "2026-07-17T00:50:50.940180+00:00",
+  "updatedAt": "2026-07-17T00:50:50.940180+00:00",
+  "phase": "storyboard",
+  "brief": {
+    "topic": "Parque Tecnológico Garça Valley — tecnologias de impacto público",
+    "audience": "Prefeitura de Garça, procuradoria, parceiros",
+    "language": "pt-BR",
+    "aspect": "16:9",
+    "durationSec": 90,
+    "styleId": "grok-voxel",
+    "musicId": "carefree",
+    "voiceId": "eve",
+    "narrationStyle": "teacher",
+    "initialPrompt": "Vídeo institucional do Garça Valley: parque tecnológico de impacto público. Masterplan, SP-294, FATEC, SPTec/RPITec, formar para ficar. Tom de pitch municipal com logos oficiais."
+  },
+  "assets": {
+    "logos": [
+      "garca-valley-mark-hero.png",
+      "garca-valley-lockup.png",
+      "garca-valley-mark.png",
+      "garca-valley-masterplan-plan.png",
+      "garca-valley-masterplan-zones.jpeg"
+    ],
+    "images": [
+      "scene_08.jpg",
+      "scene_09.jpg",
+      "scene_01.jpg",
+      "scene_02.jpg",
+      "scene_03.jpg",
+      "scene_07.jpg",
+      "scene_06.jpg",
+      "scene_12.jpg",
+      "scene_04.jpg",
+      "scene_10.jpg",
+      "scene_11.jpg",
+      "scene_05.jpg"
+    ],
+    "references": []
+  },
+  "storyboard": {
+    "version": 1,
+    "iteration": 1,
+    "summary": "Garça Valley · grok-voxel · 90s · pt-BR",
+    "totalDurationSec": 90.0,
+    "scenes": [
+      {
+        "id": "gv01",
+        "index": 0,
+        "title": "Abertura — mapa que nasce",
+        "visual": "Abertura estilo mapa épico em papel swiss: planta masterplan com prédios surgindo.",
+        "narration": "No mapa de Garça, um vale começa a nascer.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_01.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_01.jpg",
+        "transitionOut": "cut",
+        "confirmed": false
+      },
+      {
+        "id": "gv02",
+        "index": 1,
+        "title": "Logo Garça Valley",
+        "visual": "Card de marca com logo oficial Garça Valley em fundo navy.",
+        "narration": "Garça Valley — tecnologias de impacto público.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_02.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_02.jpg",
+        "transitionOut": "dissolve",
+        "confirmed": false
+      },
+      {
+        "id": "gv03",
+        "index": 2,
+        "title": "A promessa",
+        "visual": "Colagem swiss do vale modular com tag IMPACTO PÚBLICO.",
+        "narration": "O vale que transforma problema público em solução.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_03.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_03.jpg",
+        "transitionOut": "cut",
+        "confirmed": false
+      },
+      {
+        "id": "gv04",
+        "index": 3,
+        "title": "O parque",
+        "visual": "Prefeitura + rede de soluções conectadas no mapa da cidade.",
+        "narration": "Parque tecnológico de Garça: soluções reais para a cidade e o Estado.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_04.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_04.jpg",
+        "transitionOut": "dissolve",
+        "confirmed": false
+      },
+      {
+        "id": "gv05",
+        "index": 4,
+        "title": "Três verticais",
+        "visual": "Três cards: AgroTech, Indústria 4.0, GovTech.",
+        "narration": "AgroTech e FoodTech. Indústria 4.0. GovTech.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_05.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_05.jpg",
+        "transitionOut": "cut",
+        "confirmed": false
+      },
+      {
+        "id": "gv06",
+        "index": 5,
+        "title": "Já no mapa",
+        "visual": "Mapa SP com selos RPITec e SPTec.",
+        "narration": "Já no mapa estadual: incubadora na RPITec e parque no SPTec.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_06.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_06.jpg",
+        "transitionOut": "dissolve",
+        "confirmed": false
+      },
+      {
+        "id": "gv07",
+        "index": 6,
+        "title": "Localização SP-294",
+        "visual": "Satélite SP-294 + FATEC + ≥200 mil m².",
+        "narration": "Entrada de Garça, SP-294, ao lado da FATEC — mais de duzentos mil metros quadrados.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_07.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_07.jpg",
+        "transitionOut": "cut",
+        "confirmed": false
+      },
+      {
+        "id": "gv08",
+        "index": 7,
+        "title": "Masterplan",
+        "visual": "Planta de zoneamento do masterplan.",
+        "narration": "Zonas de governança, laboratórios, hub empresarial, indústria e verde.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_08.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_08.jpg",
+        "transitionOut": "dissolve",
+        "confirmed": false
+      },
+      {
+        "id": "gv09",
+        "index": 8,
+        "title": "Prédios do campus",
+        "visual": "Campus isométrico de papel: sede, hub, labs.",
+        "narration": "Sede, Innovation Hub, laboratórios e ciência — o campus modular.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_09.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_09.jpg",
+        "transitionOut": "cut",
+        "confirmed": false
+      },
+      {
+        "id": "gv10",
+        "index": 9,
+        "title": "Formar para ficar",
+        "visual": "Ciclo formação → emprego → renda → cidade.",
+        "narration": "Formar para ficar: talento, emprego e renda na própria cidade.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_10.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_10.jpg",
+        "transitionOut": "dissolve",
+        "confirmed": false
+      },
+      {
+        "id": "gv11",
+        "index": 10,
+        "title": "Boulevard",
+        "visual": "Boulevard com praça, verde e blocos tech.",
+        "narration": "Boulevard vivo: lazer, eventos e receita que sustentam o parque.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_11.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_11.jpg",
+        "transitionOut": "cut",
+        "confirmed": false
+      },
+      {
+        "id": "gv12",
+        "index": 11,
+        "title": "Encerramento",
+        "visual": "Fecho com logo e credenciamento definitivo.",
+        "narration": "Quatro anos para provar o modelo. Uma decisão de Estado.",
+        "durationSec": 7.5,
+        "imagePath": "data/projects/garcavalley/assets/scene_12.jpg",
+        "imageUrl": "/api/projects/garcavalley/assets/scene_12.jpg",
+        "transitionOut": "fade",
+        "confirmed": false
+      }
+    ],
+    "updatedAt": "2026-07-17T00:50:50.940180+00:00"
+  },
+  "iterations": [
+    {
+      "at": "2026-07-17T00:50:50.940180+00:00",
+      "note": "Seed de referência GrokStage",
+      "storyboardVersion": 1
+    }
+  ],
+  "render": {
+    "status": "idle"
+  }
+}

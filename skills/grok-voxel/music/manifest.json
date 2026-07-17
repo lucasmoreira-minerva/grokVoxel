@@ -1,0 +1,24 @@
+{
+  "allowed_sources": [
+    "pixabay",
+    "youtube_audio_library",
+    "incompetech"
+  ],
+  "tracks": [
+    {
+      "file": "carefree.mp3",
+      "title": "Carefree",
+      "source": "incompetech",
+      "license": "CC BY 4.0",
+      "moods": [
+        "documentary",
+        "warm",
+        "corporate",
+        "optimistic",
+        "tech"
+      ],
+      "credit": "Music by Kevin MacLeod (incompetech.com) \u2014 Licensed under Creative Commons: By Attribution 4.0",
+      "url": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100394"
+    }
+  ]
+}

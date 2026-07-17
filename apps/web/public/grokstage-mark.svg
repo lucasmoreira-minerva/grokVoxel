@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="GrokStage">
+  <defs>
+    <linearGradient id="gm" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5BBEFF"/>
+      <stop offset="0.55" stop-color="#7C6CFF"/>
+      <stop offset="1" stop-color="#FF6B7A"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#gm)"/>
+  <rect x="14" y="14" width="36" height="36" rx="9" stroke="#0B0F14" stroke-width="2.8" opacity="0.35"/>
+  <circle cx="32" cy="32" r="11" stroke="#0B0F14" stroke-width="2.8" opacity="0.55"/>
+  <circle cx="32" cy="32" r="4" fill="#0B0F14" opacity="0.75"/>
+  <path d="M20 20 L25 25 M44 20 L39 25 M20 44 L25 39 M44 44 L39 39" stroke="#0B0F14" stroke-width="2.4" stroke-linecap="round" opacity="0.45"/>
+</svg>
