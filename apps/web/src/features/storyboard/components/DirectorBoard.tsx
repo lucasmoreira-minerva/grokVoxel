@@ -9,7 +9,6 @@ import {
   Chip,
   Spinner,
   Switch,
-  Tabs,
   toast,
 } from "@heroui/react";
 import type {
@@ -315,6 +314,7 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
   } | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [removeIndex, setRemoveIndex] = useState<number | null>(null);
+  const [configTab, setConfigTab] = useState<"audio" | "captions">("audio");
 
   const musicOptions =
     catalog?.music?.length
@@ -854,16 +854,32 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
         </Alert>
       )}
 
-      <Card className="p-4">
-        <Tabs defaultSelectedKey="audio" className="w-full">
-          <Tabs.ListContainer>
-            <Tabs.List aria-label="Configuração do projeto">
-              <Tabs.Tab id="audio">Voz & música</Tabs.Tab>
-              <Tabs.Tab id="captions">Legendas</Tabs.Tab>
-              <Tabs.Indicator />
-            </Tabs.List>
-          </Tabs.ListContainer>
-          <Tabs.Panel id="audio" className="pt-4 grid sm:grid-cols-2 gap-4">
+      <Card className="p-4 space-y-4">
+        {/* Segmented control — avoid HeroUI Tabs.Indicator (RAC SharedElement crash) */}
+        <div
+          className="inline-flex rounded-xl border border-border bg-overlay/50 p-0.5 gap-0.5"
+          role="tablist"
+          aria-label="Configuração do projeto"
+        >
+          {(
+            [
+              { id: "audio" as const, label: "Voz & música" },
+              { id: "captions" as const, label: "Legendas" },
+            ]
+          ).map((t) => (
+            <Button
+              key={t.id}
+              size="sm"
+              variant={configTab === t.id ? "primary" : "ghost"}
+              onPress={() => setConfigTab(t.id)}
+            >
+              {t.label}
+            </Button>
+          ))}
+        </div>
+
+        {configTab === "audio" ? (
+          <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="label">Voz · narração</div>
               <select
@@ -922,8 +938,9 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
                 />
               )}
             </div>
-          </Tabs.Panel>
-          <Tabs.Panel id="captions" className="pt-4 space-y-3">
+          </div>
+        ) : (
+          <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer w-fit">
               <Switch
                 isSelected={caps.enabled}
@@ -971,14 +988,13 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
                 onChange={(e) =>
                   patchCaptions({ scale: Number(e.target.value) })
                 }
-                title="Escala (0.4–1.2)"
               />
             </div>
             <p className="text-[11px] text-muted">
               {caps.style} · {caps.position} · scale {caps.scale}
             </p>
-          </Tabs.Panel>
-        </Tabs>
+          </div>
+        )}
       </Card>
 
       <SceneEditModal
