@@ -2,12 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { nanoid } from "nanoid";
+import {
+  Alert,
+  Button,
+  Card,
+  Chip,
+  Spinner,
+  Switch,
+  Tabs,
+  toast,
+} from "@heroui/react";
 import type {
   CaptionConfig,
   Project,
   StoryboardScene,
   TransitionType,
 } from "@/lib/types/project";
+import { SceneEditModal } from "@/features/ui/SceneEditModal";
+import { ConfirmModal } from "@/features/ui/ConfirmModal";
 
 const TRANSITIONS: TransitionType[] = [
   "cut",
@@ -301,6 +313,8 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
     narrationStyles: { id: string; label: string }[];
     styles: { id: string; name: string }[];
   } | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [removeIndex, setRemoveIndex] = useState<number | null>(null);
 
   const musicOptions =
     catalog?.music?.length
@@ -487,7 +501,6 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
   }
 
   function removeScene(i: number) {
-    if (!confirm(`Remover cena ${i + 1}?`)) return;
     setDraft((p) => {
       if (!p?.storyboard) return p;
       const scenes = p.storyboard.scenes
@@ -502,6 +515,7 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
         },
       };
     });
+    toast.success(`Cena ${i + 1} removida do rascunho`);
   }
 
   async function uploadAsset(
@@ -732,11 +746,10 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
 
   if (!draft) {
     return (
-      <div className="panel p-12 flex flex-col items-center gap-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/grokstage-loader.svg" className="h-16 w-16" alt="" />
-        <span className="text-[var(--muted)]">Carregando…</span>
-      </div>
+      <Card className="p-12 flex flex-col items-center gap-3">
+        <Spinner size="lg" color="accent" />
+        <span className="text-muted">Carregando…</span>
+      </Card>
     );
   }
 
@@ -747,202 +760,255 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
     draft.phase === "error" ||
     draft.phase === "done";
 
+  const editScene =
+    editIndex !== null && sb?.scenes[editIndex]
+      ? sb.scenes[editIndex]
+      : null;
+
   return (
-    <div className="space-y-5">
-      {/* Compact header like reference sheet */}
-      <header className="rounded-sm border border-zinc-300 bg-white text-zinc-900 overflow-hidden shadow-sm">
-        <div className="grid md:grid-cols-4 text-[11px] font-semibold border-b border-zinc-300">
-          <div className="px-3 py-2 border-r border-zinc-300 bg-zinc-50">
-            PROJECT: {draft.name}
+    <div className="space-y-5 max-w-[1400px]">
+      <Card className="overflow-hidden">
+        <div className="grid md:grid-cols-4 text-[11px] font-semibold border-b border-border bg-overlay/40">
+          <div className="px-4 py-2.5 border-r border-border">
+            <span className="text-muted font-medium">PROJECT</span>
+            <div className="text-sm font-bold mt-0.5 truncate">{draft.name}</div>
           </div>
-          <div className="px-3 py-2 border-r border-zinc-300">
-            DURATION: {draft.brief.durationSec}s
+          <div className="px-4 py-2.5 border-r border-border">
+            <span className="text-muted font-medium">DURATION</span>
+            <div className="text-sm font-bold mt-0.5">{draft.brief.durationSec}s</div>
           </div>
-          <div className="px-3 py-2 border-r border-zinc-300">
-            ASPECT: {draft.brief.aspect}
+          <div className="px-4 py-2.5 border-r border-border">
+            <span className="text-muted font-medium">ASPECT</span>
+            <div className="text-sm font-bold mt-0.5">{draft.brief.aspect}</div>
           </div>
-          <div className="px-3 py-2">STYLE: {draft.brief.styleId}</div>
+          <div className="px-4 py-2.5">
+            <span className="text-muted font-medium">STYLE</span>
+            <div className="text-sm font-bold mt-0.5">{draft.brief.styleId}</div>
+          </div>
         </div>
-        <div className="px-3 py-2 text-[12px] text-zinc-600 border-b border-zinc-200">
-          <span className="font-bold text-zinc-800">CONCEPT: </span>
-          {draft.brief.topic}
+        <div className="px-4 py-3 text-sm border-b border-border">
+          <span className="font-semibold">Concept · </span>
+          <span className="text-muted">{draft.brief.topic}</span>
         </div>
-        <div className="px-3 py-2 flex flex-wrap gap-2 items-center justify-between bg-zinc-50">
-          <div className="flex flex-wrap gap-2 text-[11px]">
-            <span className="badge !text-zinc-600 !border-zinc-300">{draft.phase}</span>
+        <div className="px-4 py-3 flex flex-wrap gap-2 items-center justify-between bg-surface">
+          <div className="flex flex-wrap gap-2 items-center">
+            <Chip size="sm" variant="soft" color="accent">
+              <Chip.Label>{draft.phase}</Chip.Label>
+            </Chip>
             {sb && (
-              <span className="badge !text-zinc-600 !border-zinc-300">
-                {confirmedCount}/{sb.scenes.length} ok · v{sb.version}
-              </span>
+              <Chip size="sm" variant="secondary">
+                <Chip.Label>
+                  {confirmedCount}/{sb.scenes.length} ok · v{sb.version}
+                </Chip.Label>
+              </Chip>
             )}
             {queuedImages > 0 && (
-              <span className="badge badge-run">{queuedImages} na fila</span>
+              <Chip size="sm" color="warning" variant="soft">
+                <Chip.Label>{queuedImages} na fila</Chip.Label>
+              </Chip>
             )}
           </div>
           <div className="flex flex-wrap gap-1.5">
-            <button className="btn !text-xs !py-1" disabled={busy} onClick={() => load()}>
+            <Button size="sm" variant="secondary" isDisabled={busy} onPress={() => load()}>
               Atualizar
-            </button>
-            <button
-              className="btn !text-xs !py-1"
-              disabled={busy || !sb}
-              onClick={() => saveFull("Manual save").then(() => setMsg("Salvo."))}
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              isDisabled={busy || !sb}
+              onPress={() =>
+                saveFull("Manual save").then(() => toast.success("Projeto salvo"))
+              }
             >
               Salvar
-            </button>
-            <button
-              className="btn !text-xs !py-1"
-              disabled={busy || !sb}
-              onClick={() => addScene()}
-            >
+            </Button>
+            <Button size="sm" variant="secondary" isDisabled={busy || !sb} onPress={() => addScene()}>
               + Cena
-            </button>
-            <button
-              className="btn !text-xs !py-1"
-              disabled={busy || !sb}
-              onClick={playBulkImages}
-            >
-              ▶ Play bulk stills
-            </button>
-            <button
-              className="btn btn-ok !text-xs !py-1"
-              disabled={busy || !sb?.scenes?.length}
-              onClick={approve}
+            </Button>
+            <Button size="sm" variant="secondary" isDisabled={busy || !sb} onPress={playBulkImages}>
+              ▶ Bulk stills
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              isDisabled={busy || !sb?.scenes?.length}
+              onPress={approve}
             >
               Fechar board
-            </button>
-            <button
-              className="btn btn-primary !text-xs !py-1"
-              disabled={busy || !canRender}
-              onClick={releaseCli}
-            >
+            </Button>
+            <Button size="sm" variant="primary" isDisabled={busy || !canRender} onPress={releaseCli}>
               CLI Render
-            </button>
+            </Button>
           </div>
         </div>
-      </header>
+      </Card>
 
-      {(error || msg) && (
-        <div
-          className={`rounded-lg border px-3 py-2 text-sm ${
-            error
-              ? "border-rose-800 bg-rose-950/40 text-rose-100"
-              : "border-emerald-800 bg-emerald-950/30 text-emerald-100"
-          }`}
-        >
-          {error || msg}
-        </div>
+      {error && (
+        <Alert status="danger">
+          <Alert.Description>{error}</Alert.Description>
+        </Alert>
+      )}
+      {msg && !error && (
+        <Alert status="success">
+          <Alert.Description>{msg}</Alert.Description>
+        </Alert>
       )}
 
-      {/* Project controls: voice, music, captions */}
-      <section className="panel p-4 grid lg:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <div className="label">Voz · narração</div>
-          <select
-            className="select !text-sm"
-            value={draft.brief.voiceId}
-            onChange={(e) => patchBrief({ voiceId: e.target.value })}
-          >
-            {(catalog?.voices || [{ id: draft.brief.voiceId, label: draft.brief.voiceId }]).map(
-              (v) => (
-                <option key={v.id} value={v.id}>
-                  {v.label}
-                </option>
-              )
-            )}
-          </select>
-          <select
-            className="select !text-sm"
-            value={draft.brief.narrationStyle}
-            onChange={(e) => patchBrief({ narrationStyle: e.target.value })}
-          >
-            {(
-              catalog?.narrationStyles || [
-                { id: draft.brief.narrationStyle, label: draft.brief.narrationStyle },
-              ]
-            ).map((n) => (
-              <option key={n.id} value={n.id}>
-                {n.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <div className="label">Música</div>
-          <select
-            className="select !text-sm"
-            value={draft.brief.musicId}
-            onChange={(e) => patchBrief({ musicId: e.target.value })}
-          >
-            {musicOptions.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.title}
-              </option>
-            ))}
-          </select>
-          {draft.brief.musicId !== "none" && (
-            <audio
-              controls
-              className="w-full h-8"
-              src={`/api/music/${draft.brief.musicId}`}
-              preload="none"
-            />
-          )}
-        </div>
-        <div className="space-y-2">
-          <div className="label">Legendas</div>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={caps.enabled}
-              onChange={(e) => patchCaptions({ enabled: e.target.checked })}
-            />
-            Ativar legendas no assemble
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <select
-              className="select !text-sm"
-              value={caps.style}
-              onChange={(e) =>
-                patchCaptions({
-                  style: e.target.value as CaptionConfig["style"],
-                })
-              }
-            >
-              <option value="clean">Clean</option>
-              <option value="bold">Bold</option>
-              <option value="minimal">Minimal</option>
-            </select>
-            <select
-              className="select !text-sm"
-              value={caps.position}
-              onChange={(e) =>
-                patchCaptions({
-                  position: e.target.value as CaptionConfig["position"],
-                })
-              }
-            >
-              <option value="bottom">Bottom</option>
-              <option value="top">Top</option>
-            </select>
-            <input
-              className="input !text-sm !w-20"
-              type="number"
-              min={0.4}
-              max={1.2}
-              step={0.05}
-              value={caps.scale}
-              onChange={(e) =>
-                patchCaptions({ scale: Number(e.target.value) })
-              }
-              title="Escala (0.4–1.2)"
-            />
-          </div>
-          <p className="text-[10px] text-[var(--muted)]">
-            {caps.style} · {caps.position} · scale {caps.scale}
-          </p>
-        </div>
-      </section>
+      <Card className="p-4">
+        <Tabs defaultSelectedKey="audio" className="w-full">
+          <Tabs.ListContainer>
+            <Tabs.List aria-label="Configuração do projeto">
+              <Tabs.Tab id="audio">Voz & música</Tabs.Tab>
+              <Tabs.Tab id="captions">Legendas</Tabs.Tab>
+              <Tabs.Indicator />
+            </Tabs.List>
+          </Tabs.ListContainer>
+          <Tabs.Panel id="audio" className="pt-4 grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <div className="label">Voz · narração</div>
+              <select
+                className="select !text-sm"
+                value={draft.brief.voiceId}
+                onChange={(e) => patchBrief({ voiceId: e.target.value })}
+              >
+                {(
+                  catalog?.voices || [
+                    { id: draft.brief.voiceId, label: draft.brief.voiceId },
+                  ]
+                ).map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="select !text-sm"
+                value={draft.brief.narrationStyle}
+                onChange={(e) => patchBrief({ narrationStyle: e.target.value })}
+              >
+                {(
+                  catalog?.narrationStyles || [
+                    {
+                      id: draft.brief.narrationStyle,
+                      label: draft.brief.narrationStyle,
+                    },
+                  ]
+                ).map((n) => (
+                  <option key={n.id} value={n.id}>
+                    {n.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <div className="label">Música</div>
+              <select
+                className="select !text-sm"
+                value={draft.brief.musicId}
+                onChange={(e) => patchBrief({ musicId: e.target.value })}
+              >
+                {musicOptions.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.title}
+                  </option>
+                ))}
+              </select>
+              {draft.brief.musicId !== "none" && (
+                <audio
+                  controls
+                  className="w-full h-9 rounded-lg"
+                  src={`/api/music/${draft.brief.musicId}`}
+                  preload="none"
+                />
+              )}
+            </div>
+          </Tabs.Panel>
+          <Tabs.Panel id="captions" className="pt-4 space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer w-fit">
+              <Switch
+                isSelected={caps.enabled}
+                onChange={(v) => patchCaptions({ enabled: !!v })}
+              >
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch>
+              <span className="text-sm font-medium">Legendas no assemble</span>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <select
+                className="select !text-sm !w-auto"
+                value={caps.style}
+                onChange={(e) =>
+                  patchCaptions({
+                    style: e.target.value as CaptionConfig["style"],
+                  })
+                }
+              >
+                <option value="clean">Clean</option>
+                <option value="bold">Bold</option>
+                <option value="minimal">Minimal</option>
+              </select>
+              <select
+                className="select !text-sm !w-auto"
+                value={caps.position}
+                onChange={(e) =>
+                  patchCaptions({
+                    position: e.target.value as CaptionConfig["position"],
+                  })
+                }
+              >
+                <option value="bottom">Bottom</option>
+                <option value="top">Top</option>
+              </select>
+              <input
+                className="input !text-sm !w-24"
+                type="number"
+                min={0.4}
+                max={1.2}
+                step={0.05}
+                value={caps.scale}
+                onChange={(e) =>
+                  patchCaptions({ scale: Number(e.target.value) })
+                }
+                title="Escala (0.4–1.2)"
+              />
+            </div>
+            <p className="text-[11px] text-muted">
+              {caps.style} · {caps.position} · scale {caps.scale}
+            </p>
+          </Tabs.Panel>
+        </Tabs>
+      </Card>
+
+      <SceneEditModal
+        isOpen={editIndex !== null}
+        scene={editScene}
+        index={editIndex ?? 0}
+        onClose={() => setEditIndex(null)}
+        onSave={(patch) => {
+          if (editIndex === null) return;
+          patchScene(editIndex, patch);
+          toast.success("Cena atualizada no rascunho");
+        }}
+        onConfirm={() => {
+          if (editIndex !== null) confirmScene(editIndex);
+        }}
+      />
+      <ConfirmModal
+        isOpen={removeIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setRemoveIndex(null);
+        }}
+        title={`Remover cena ${(removeIndex ?? 0) + 1}?`}
+        description="A cena some do rascunho. Salve o board para persistir."
+        confirmLabel="Remover"
+        danger
+        onConfirm={() => {
+          if (removeIndex !== null) removeScene(removeIndex);
+          setRemoveIndex(null);
+        }}
+      />
 
       {/* Harness + assets compact */}
       <div className="grid lg:grid-cols-5 gap-3">
@@ -1002,18 +1068,12 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
       </div>
 
       {/* Filmstrip storyboard — light sheet like reference */}
-      <section className="rounded-sm border border-zinc-300 bg-zinc-100 p-3 shadow-inner">
+      <section className="storyboard-sheet rounded-lg border border-border p-3 shadow-inner">
         <div className="flex items-center justify-between mb-2 px-1">
-          <h2 className="text-sm font-bold text-zinc-800 tracking-wide">
-            STORYBOARD SHEET
-          </h2>
-          <button
-            type="button"
-            className="text-xs font-semibold text-sky-700 hover:underline"
-            onClick={() => addScene()}
-          >
+          <h2 className="text-sm font-bold tracking-wide">STORYBOARD SHEET</h2>
+          <Button size="sm" variant="ghost" onPress={() => addScene()}>
             + Adicionar card
-          </button>
+          </Button>
         </div>
         {!sb?.scenes?.length ? (
           <div className="bg-white border border-zinc-200 p-10 text-center text-zinc-500 text-sm">
@@ -1027,10 +1087,13 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
                 scene={scene}
                 index={i}
                 editing={editId === scene.id}
-                onEdit={() => setEditId(scene.id)}
+                onEdit={() => {
+                  setEditIndex(i);
+                  setEditId(scene.id);
+                }}
                 onCancel={() => {
                   setEditId(null);
-                  // only discard this scene's edit fields from last saved project
+                  setEditIndex(null);
                   if (project?.storyboard) {
                     const saved = project.storyboard.scenes.find(
                       (s) => s.id === scene.id
@@ -1043,10 +1106,10 @@ export function DirectorBoard({ projectId }: { projectId: string }) {
                 onReplaceStill={(f) => replaceSceneStill(i, f)}
                 onAddReference={(f) => addSceneReference(i, f)}
                 onQueueRegen={() => queueRegen(i)}
-                onRemove={() => removeScene(i)}
+                onRemove={() => setRemoveIndex(i)}
                 onInsertAfter={() => {
                   addScene(i);
-                  setMsg(`Card inserido após cena ${i + 1}.`);
+                  toast.success(`Card inserido após cena ${i + 1}`);
                 }}
               />
             ))}
